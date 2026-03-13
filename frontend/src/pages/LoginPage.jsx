@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import assets from "../assets/assets";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const LoginPage = () => {
   const [currState, setCurrState] = useState("Sign up");
@@ -9,13 +11,21 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
 
-  const onSubmitHandler = (event)=>{
+  const { login } = useContext(AuthContext);
+
+  const onSubmitHandler = (event) => {
     event.preventDefault();
-    if(currState === "Sign up" && !isDataSubmitted){
+    if (currState === "Sign up" && !isDataSubmitted) {
       setIsDataSubmitted(true);
       return;
     }
-  } 
+    login(currState === "Sign up" ? "signup" : "login", {
+      fullName,
+      email,
+      password,
+      bio,
+    });
+  };
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl">
       {/* ----- Left Section ----- */}
@@ -33,7 +43,7 @@ const LoginPage = () => {
           {currState}
           {isDataSubmitted && (
             <img
-            onClick={()=>setIsDataSubmitted(false)}
+              onClick={() => setIsDataSubmitted(false)}
               className="w-5 cursor-pointer"
               src={assets.arrow_icon}
               alt="arrow_icon"

@@ -46,7 +46,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
     const userData = await User.findOne({ email });
-    const isPasswordCorrect = bcrypt.compare(password, userData.password);
+    const isPasswordCorrect = await bcrypt.compare(password, userData.password);
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid Password" });
     }
@@ -74,20 +74,31 @@ export const checkAuth = (req,res)=>  {
 // ----- Update Profile
 
 export const updateProfile = async (req,res)=>{
+  console.log(req,res);
+  
     try {
         const {profilePic,bio,fullName} = req.body;
+        console.log(profilePic,bio,fullName);
+        
         const userId = req.user._id;
-        let updatedUser ;
-
+        console.log(userId);
+        
+        let updatedUser 
+        console.log(updatedUser)
         if (!profilePic) {
             updatedUser = await User.findByIdAndUpdate({bio,fullName},{new:true});
+            console.log({1:updatedUser})
         }else{
             const upload = await cloudinary.uploader.upload(profilePic)
+            console.log({2:upload})
             updatedUser = await User.findByIdAndUpdate(userId,{profilePic:upload.secure_url,bio,fullName},{new:true})
+            console.log({2:updatedUser})
         }
         res
         .status(200)
         .json({ success: true, user:updateProfile, message: "Profile Updated Successfully" });
+        console.log(res.status,res.json);
+        
     } catch (error) {
         console.log(error);
         res
@@ -96,3 +107,30 @@ export const updateProfile = async (req,res)=>{
         
     }
 }
+
+
+// // ----- Update Profile
+
+// export const updateProfile = async (req,res)=>{
+//   try {
+//       const {profilePic,bio,fullName} = req.body;
+//       const userId = req.user._id;
+//       let updatedUser 
+
+//       if (!profilePic) {
+//           updatedUser = await User.findByIdAndUpdate({bio,fullName},{new:true});
+//       }else{
+//           const upload = await cloudinary.uploader.upload(profilePic)
+//           updatedUser = await User.findByIdAndUpdate(userId,{profilePic:upload.secure_url,bio,fullName},{new:true})
+//       }
+//       res
+//       .status(200)
+//       .json({ success: true, user:updateProfile, message: "Profile Updated Successfully" });
+//   } catch (error) {
+//       console.log(error);
+//       res
+//     .status(500)
+//     .json({ success: false, message:error.message });
+      
+//   }
+// }
